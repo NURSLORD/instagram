@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LightCode</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-wrapper">
+        <img src="{% static 'img/logo.PNG' %}" class="brand-img" alt="">
+        <div class="nav-items">
+            <a href="{% url 'home' %}"><img src="{% static 'img/home.PNG' %}" class="icon" alt=""></a>
+            <a href="{% url 'add_post' %}"><img src="{% static 'img/add.PNG' %}" class="icon" alt=""></a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'account' owner.pk %}"><img src="{% static 'img/my_account.png' %}" class="icon" alt=""></a>
+                <form action="{% url 'log_out' %}">
+                    {% csrf_token %}
+                    <button type="submit" style="color: red">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'logining' %}" class="register">Войти</a>
+                <a href="{% url 'register' %}" class="register">Регистрация</a>
+            {% endif %}
+            <div class="icon user-profile"></div>
+        </div>
+    </div>
+</nav>
+<section class="main">
+    <div class="wrapper">
+        <div class="left-col">
+            <div class="status-wrapper">
+                {% for u in users %}
+                    <div class="status-card">
+                        <div class="profile-pic">
+                            <a href="{% url 'account' u.pk %}"><img src="{{ u.image.url }}" alt=""></a></div>
+                        <p class="username">{{ u.username }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            {% for post in posts %}
+                <div class="post">
+                    <div class="info">
+                        <div class="user">
+                            <div class="profile-pic"><img src="{{ post.owner.image.url }}" alt=""></div>
+                            <a href="{% url 'account' post.owner.pk %}"><p class="username">{{ post.owner.username }}</p></a>
+                        </div>
+                        {% if user.pk == owner.pk and user.is_authenticated %}
+                            <a href="{% url 'delete' post.pk %}"><img src="{% static 'img/delete.png' %}"
+                                                                      class="options" alt=""></a>
+                        {% else %}
+                            <img src="{% static 'img/option.PNG' %}" class="options" alt="">
+                        {% endif %}
+                    </div>
+                    <img src="{{ post.image.url }}" class="post-image" alt="">
+                    <div class="post-content">
+                        <p class="description"><span>{{ post.owner.username }}</span> {{ post.description }}
+                        </p>
+                        <p class="post-time">{{ post.is_posted }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+        </div>
+    {% if user.is_authenticated %}
+        <div class="right-col">
+            <div>
+                <div class="profile-card">
+                    <div class="profile-pic">
+                        <img src="{{ owner.image.url }}" alt="">
+                    </div>
+                    <div>
+                        <p class="username">{{ owner.username }}</p>
+                        <p class="sub-text">{{ owner.first_name }}</p>
+                    </div>
+                    <a href="{% url 'account' owner.pk %}">
+                        <button class="action-btn">Мой кабинет</button>
+                    </a>
+                </div>
+                <p class="suggestion-text">Рекомендую для вас</p>
+                {% for u in users %}
+                    <div class="profile-card">
+                        <div class="profile-pic">
+                            <img src="{{ u.image.url }}" alt="">
+                        </div>
+                        <div>
+                            <p class="username">{{ u.username }}</p>
+                            <p class="sub-text">{{ u.first_name }}</p>
+                        </div>
+                        <a href="{% url 'account' u.pk %}">
+                            <button class="action-btn">Посмотреть</button>
+                        </a>
+                    </div>
+                {% endfor %}
+
+            </div>
+            <div>
+
+            </div>
+        </div>
+
+    </div>
+{% endif %}
+</section>
+
+
+<style>
+    .register {
+        padding: 8px 16px;
+        border: 1px solid #9a9696;
+        border-radius: 8px;
+        margin: 0 4px;
+    }
+
+    .register:last-child {
+        margin: 0;
+    }
+
+    .search-box {
+        position: static;
+        left: 50%;
+        transform: translateX(0);
+    }
+</style>
+
+</body>
+</html>
+
